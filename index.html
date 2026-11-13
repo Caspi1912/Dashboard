@@ -6,8 +6,7 @@
   <title>Smart Home Dashboard</title>
   <style>
     :root {
-      --bg-color: #0b1120;
-      --card-border: rgba(255, 255, 255, 0.09);
+      --card-border: rgba(255, 255, 255, 0.12);
       --text-main: #f8fafc;
       --text-muted: #94a3b8;
     }
@@ -19,103 +18,88 @@
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     }
 
+    /* Fester 16:9 Bildschirm ohne Scrollen */
     body {
-      background: radial-gradient(circle at 15% 15%, #16223d 0%, #0b1120 55%, #080c17 100%);
-      color: var(--text-main);
-      padding: 20px;
-      min-height: 100vh;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      padding: 16px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: background 2s ease;
     }
 
-    .dashboard-grid {
+    /* Dynamische Tageszeiten-Hintergründe */
+    body.theme-night {
+      background: radial-gradient(circle at 50% 20%, #1e1b4b 0%, #0f172a 60%, #020617 100%);
+    }
+    body.theme-day {
+      background: radial-gradient(circle at 50% 20%, #38bdf8 0%, #0284c7 60%, #0f172a 100%);
+    }
+    body.theme-evening {
+      background: radial-gradient(circle at 50% 20%, #c2410c 0%, #431407 60%, #0f172a 100%);
+    }
+
+    .dashboard-container {
+      width: 100%;
+      max-width: 1450px;
+      height: 100%;
+      max-height: 815px;
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-      gap: 20px;
-      max-width: 1200px;
-      margin: 0 auto;
+      grid-template-columns: 1fr 1.25fr;
+      grid-template-rows: 1fr 1.2fr;
+      gap: 16px;
     }
 
-    /* Moderne, farbenfroh akzentuierte Kacheln */
+    /* Kachel Grunddesign */
     .tile {
       position: relative;
       overflow: hidden;
       border: 1px solid var(--card-border);
-      border-radius: 20px;
-      padding: 20px;
-      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+      border-radius: 18px;
+      padding: 16px;
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.5);
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      backdrop-filter: blur(10px);
+      backdrop-filter: blur(14px);
+      background: rgba(15, 23, 42, 0.78);
     }
 
-    /* Kachel 1 Farb-Theme: Sanftes Indigo & Violett */
-    .tile-clock {
-      background: linear-gradient(145deg, rgba(49, 46, 129, 0.35) 0%, rgba(30, 41, 59, 0.85) 60%, rgba(15, 23, 42, 0.95) 100%);
-      border-top: 2px solid rgba(129, 140, 248, 0.55);
-    }
-
-    /* Kachel 2 Farb-Theme: Frisches Ozean- & Himmelblau */
-    .tile-weather {
-      background: linear-gradient(145deg, rgba(3, 105, 161, 0.35) 0%, rgba(30, 41, 59, 0.85) 60%, rgba(15, 23, 42, 0.95) 100%);
-      border-top: 2px solid rgba(56, 189, 248, 0.6);
-    }
-
-    /* Kachel 3 Farb-Theme: Modernes Smaragd & Petrol */
-    .tile-waste {
-      background: linear-gradient(145deg, rgba(6, 95, 70, 0.28) 0%, rgba(30, 41, 59, 0.85) 55%, rgba(15, 23, 42, 0.95) 100%);
-      border-top: 2px solid rgba(52, 211, 153, 0.55);
-    }
-
-    .tile-header, .clock-box, .weather-top, .pressure-card, .target-fish-box, .waste-content {
-      position: relative;
-      z-index: 2;
+    .tile-clock { border-top: 3px solid #818cf8; }
+    .tile-weather { border-top: 3px solid #38bdf8; }
+    .tile-waste { 
+      grid-column: span 2; 
+      border-top: 3px solid #34d399;
     }
 
     .tile-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 14px;
+      margin-bottom: 6px;
+      z-index: 2;
     }
 
     .tile-title {
-      font-size: 1.05rem;
+      font-size: 0.95rem;
       font-weight: 600;
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
       color: #cbd5e1;
     }
 
-    .badge-indigo {
-      background: rgba(129, 140, 248, 0.18);
-      color: #a5b4fc;
-      border: 1px solid rgba(129, 140, 248, 0.35);
-      padding: 4px 10px;
+    .badge {
+      padding: 3px 9px;
       border-radius: 999px;
-      font-size: 0.78rem;
+      font-size: 0.72rem;
       font-weight: 600;
     }
-
-    .badge-sky {
-      background: rgba(56, 189, 248, 0.18);
-      color: #7dd3fc;
-      border: 1px solid rgba(56, 189, 248, 0.35);
-      padding: 4px 10px;
-      border-radius: 999px;
-      font-size: 0.78rem;
-      font-weight: 600;
-    }
-
-    .badge-emerald {
-      background: rgba(52, 211, 153, 0.18);
-      color: #6ee7b7;
-      border: 1px solid rgba(52, 211, 153, 0.35);
-      padding: 4px 10px;
-      border-radius: 999px;
-      font-size: 0.78rem;
-      font-weight: 600;
-    }
+    .badge-clock { background: rgba(129, 140, 248, 0.2); color: #a5b4fc; border: 1px solid rgba(129, 140, 248, 0.4); }
+    .badge-weather { background: rgba(56, 189, 248, 0.2); color: #7dd3fc; border: 1px solid rgba(56, 189, 248, 0.4); }
+    .badge-waste { background: rgba(52, 211, 153, 0.2); color: #6ee7b7; border: 1px solid rgba(52, 211, 153, 0.4); }
 
     /* --- KACHEL 1: UHRZEIT & DATUM --- */
     .clock-box {
@@ -124,15 +108,15 @@
       justify-content: center;
       align-items: center;
       text-align: center;
-      padding: 16px 0;
       flex: 1;
+      z-index: 2;
     }
 
     .big-time {
-      font-size: 3.4rem;
+      font-size: 3.2rem;
       font-weight: 800;
-      letter-spacing: 1.5px;
-      line-height: 1.05;
+      letter-spacing: 1px;
+      line-height: 1;
       background: linear-gradient(180deg, #ffffff 30%, #c7d2fe 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
@@ -140,27 +124,26 @@
     }
 
     .big-time span {
-      font-size: 1.5rem;
+      font-size: 1.4rem;
       background: linear-gradient(180deg, #a5b4fc 0%, #818cf8 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      font-weight: 700;
     }
 
     .big-weekday {
-      font-size: 1.2rem;
+      font-size: 1.05rem;
       font-weight: 600;
       color: #a5b4fc;
-      margin-top: 10px;
+      margin-top: 6px;
     }
 
     .big-date {
-      font-size: 1.05rem;
+      font-size: 0.9rem;
       color: var(--text-muted);
-      margin-top: 4px;
+      margin-top: 2px;
     }
 
-    /* --- KACHEL 2: WETTER-ANIMATIONEN --- */
+    /* --- KACHEL 2: WETTER & ANGEL-KOMPASS --- */
     .weather-anim-layer {
       position: absolute;
       inset: 0;
@@ -169,80 +152,37 @@
       overflow: hidden;
     }
 
-    /* Sonnenschein Animation */
-    .sun-glow {
+    .star {
       position: absolute;
-      top: -45px;
-      right: -45px;
-      width: 170px;
-      height: 170px;
+      background: #ffffff;
       border-radius: 50%;
-      background: radial-gradient(circle, rgba(253, 224, 71, 0.35) 0%, rgba(250, 204, 21, 0.12) 45%, transparent 72%);
-      animation: sunPulse 5s ease-in-out infinite;
+      animation: twinkle 3s ease-in-out infinite;
+    }
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.2; transform: scale(0.8); }
+      50% { opacity: 1; transform: scale(1.2); }
     }
 
-    @keyframes sunPulse {
-      0%, 100% { transform: scale(1); opacity: 0.85; }
-      50% { transform: scale(1.18); opacity: 1; }
-    }
-
-    /* Leichte Wolken Animation */
-    .cloud-puff {
+    .drifting-cloud {
       position: absolute;
-      background: radial-gradient(circle, rgba(255, 255, 255, 0.14) 0%, transparent 70%);
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.09) 0%, transparent 70%);
       border-radius: 50%;
-      animation: cloudDrift linear infinite;
+      animation: cloudMove linear infinite;
+    }
+    @keyframes cloudMove {
+      0% { transform: translateX(-150px); }
+      100% { transform: translateX(500px); }
     }
 
-    @keyframes cloudDrift {
-      0% { transform: translateX(-120px); }
-      100% { transform: translateX(420px); }
-    }
-
-    /* Leichter Regen Animation */
-    .rain-drop {
-      position: absolute;
-      top: -20px;
-      width: 1.5px;
-      height: 14px;
-      background: linear-gradient(to bottom, transparent, rgba(125, 211, 252, 0.65));
-      border-radius: 2px;
-      animation: rainFall linear infinite;
-    }
-
-    @keyframes rainFall {
-      0% { transform: translateY(-20px) translateX(0); opacity: 0; }
-      20% { opacity: 0.85; }
-      100% { transform: translateY(290px) translateX(-18px); opacity: 0; }
-    }
-
-    /* Leichter Schneefall Animation */
-    .snow-flake {
-      position: absolute;
-      top: -15px;
-      background: rgba(255, 255, 255, 0.85);
-      border-radius: 50%;
-      box-shadow: 0 0 6px rgba(255, 255, 255, 0.6);
-      animation: snowFall ease-in-out infinite;
-    }
-
-    @keyframes snowFall {
-      0% { transform: translateY(-15px) translateX(0); opacity: 0; }
-      20% { opacity: 0.9; }
-      50% { transform: translateY(140px) translateX(14px); }
-      100% { transform: translateY(290px) translateX(-10px); opacity: 0; }
-    }
-
-    /* Wetter Inhalt */
-    .weather-top {
+    .weather-top-row {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 12px;
+      z-index: 2;
     }
 
     .temp-main {
-      font-size: 2.5rem;
+      font-size: 2rem;
       font-weight: 800;
       line-height: 1;
       background: linear-gradient(180deg, #ffffff 30%, #bae6fd 100%);
@@ -251,182 +191,203 @@
     }
 
     .weather-desc {
-      font-size: 0.9rem;
+      font-size: 0.78rem;
       color: #bae6fd;
-      font-weight: 500;
-      margin-top: 4px;
     }
 
-    .weather-stats {
-      text-align: right;
-      font-size: 0.82rem;
-      color: #cbd5e1;
-      line-height: 1.45;
-    }
-
-    .pressure-card {
-      background: rgba(15, 23, 42, 0.6);
-      border: 1px solid rgba(56, 189, 248, 0.22);
+    /* Angel-Kompass Layout */
+    .fishing-compass-grid {
+      display: grid;
+      grid-template-columns: 120px 1fr;
+      gap: 12px;
+      align-items: center;
+      z-index: 2;
+      background: rgba(15, 23, 42, 0.65);
+      border: 1px solid rgba(56, 189, 248, 0.2);
       border-radius: 14px;
-      padding: 12px;
-      margin-bottom: 10px;
+      padding: 10px;
     }
 
-    .pressure-row {
+    .compass-container {
+      width: 110px;
+      height: 110px;
+      position: relative;
+      margin: 0 auto;
+      background: radial-gradient(circle, rgba(30, 41, 59, 0.9) 0%, rgba(15, 23, 42, 0.95) 100%);
+      border: 2px solid rgba(56, 189, 248, 0.35);
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: inset 0 0 10px rgba(0,0,0,0.6);
+    }
+
+    .compass-mark {
+      position: absolute;
+      font-size: 0.65rem;
+      font-weight: 800;
+      color: #94a3b8;
+    }
+    .c-n { top: 4px; left: 50%; transform: translateX(-50%); color: #38bdf8; }
+    .c-e { right: 6px; top: 50%; transform: translateY(-50%); }
+    .c-s { bottom: 4px; left: 50%; transform: translateX(-50%); }
+    .c-w { left: 6px; top: 50%; transform: translateY(-50%); }
+
+    /* Drehbarer Kompass-Zeiger */
+    .compass-needle {
+      position: absolute;
+      width: 4px;
+      height: 70px;
+      background: transparent;
+      transition: transform 1s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .compass-needle::before {
+      content: "";
+      position: absolute;
+      top: 2px;
+      left: 50%;
+      transform: translateX(-50%);
+      border-left: 6px solid transparent;
+      border-right: 6px solid transparent;
+      border-bottom: 34px solid #34d399;
+      filter: drop-shadow(0 0 6px #34d399);
+    }
+    .compass-needle::after {
+      content: "";
+      position: absolute;
+      bottom: 2px;
+      left: 50%;
+      transform: translateX(-50%);
+      border-left: 5px solid transparent;
+      border-right: 5px solid transparent;
+      border-top: 20px solid #64748b;
+    }
+    .compass-pivot {
+      width: 12px;
+      height: 12px;
+      background: #f8fafc;
+      border-radius: 50%;
+      box-shadow: 0 0 5px rgba(0,0,0,0.8);
+      z-index: 5;
+    }
+
+    .compass-info h4 {
+      font-size: 0.88rem;
+      font-weight: 800;
+      color: #34d399;
+      margin-bottom: 3px;
+    }
+    .compass-info p {
+      font-size: 0.73rem;
+      color: #cbd5e1;
+      line-height: 1.25;
+    }
+    .pressure-small {
+      font-size: 0.72rem;
+      color: #38bdf8;
+      margin-top: 4px;
+      font-weight: 600;
+    }
+
+    /* --- KACHEL 3: 3D-MÜLLTONNEN & KALENDER --- */
+    .waste-layout {
       display: flex;
       justify-content: space-between;
-      align-items: baseline;
+      align-items: center;
+      gap: 16px;
+      z-index: 2;
+      height: 100%;
     }
 
-    .pressure-val {
-      font-size: 1.5rem;
-      font-weight: 800;
-      color: var(--text-main);
-    }
-
-    .pressure-trend {
-      font-size: 0.82rem;
-      font-weight: 600;
-      color: #7dd3fc;
-    }
-
-    .target-fish-box {
-      background: linear-gradient(135deg, rgba(14, 165, 233, 0.16), rgba(16, 185, 129, 0.14));
-      border: 1px solid rgba(52, 211, 153, 0.35);
-      border-radius: 14px;
-      padding: 12px;
-    }
-
-    .fish-header {
-      font-size: 0.75rem;
-      text-transform: uppercase;
-      letter-spacing: 0.6px;
-      color: #6ee7b7;
-      font-weight: 700;
-      margin-bottom: 4px;
-    }
-
-    .fish-title {
-      font-size: 1.12rem;
-      font-weight: 800;
-      color: #ffffff;
-      margin-bottom: 4px;
-    }
-
-    .fish-reason {
-      font-size: 0.82rem;
-      color: #cbd5e1;
-      line-height: 1.35;
-    }
-
-    /* --- KACHEL 3: MÜLLPLAN & 3D TONNEN --- */
-    .waste-content {
-      display: flex;
-      flex-direction: column;
-      gap: 22px;
-    }
-
-    @media (min-width: 720px) {
-      .waste-tile-wide {
-        grid-column: span 2;
-      }
-      .waste-content {
-        flex-direction: row;
-        align-items: center;
-        justify-content: space-between;
-      }
-    }
-
-    .bins-stage {
+    .bins-stage-compact {
       position: relative;
-      height: 235px;
+      height: 155px;
       flex: 1.2;
-      min-width: 280px;
       display: flex;
       justify-content: center;
       align-items: flex-end;
       perspective: 900px;
-      padding-bottom: 10px;
     }
 
     .bin-wrapper {
       position: absolute;
-      bottom: 12px;
-      transition: all 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+      bottom: 5px;
+      transition: all 0.55s cubic-bezier(0.2, 0.8, 0.2, 1);
       display: flex;
       flex-direction: column;
       align-items: center;
+      cursor: pointer;
     }
 
     .bin-wrapper.pos-0 {
-      transform: translateX(0) translateZ(40px) scale(1.08);
+      transform: translateX(0) translateZ(45px) scale(1.02);
       z-index: 30;
-      filter: drop-shadow(0 16px 20px rgba(0, 0, 0, 0.65));
+      animation: binFloat 4s ease-in-out infinite;
+    }
+    @keyframes binFloat {
+      0%, 100% { transform: translateX(0) translateZ(45px) scale(1.02) translateY(0); }
+      50% { transform: translateX(0) translateZ(45px) scale(1.02) translateY(-5px); }
     }
 
     .bin-wrapper.pos-1 {
-      transform: translateX(-105px) translateZ(-40px) scale(0.82);
+      transform: translateX(-95px) translateZ(-40px) scale(0.74);
       z-index: 15;
-      opacity: 0.9;
-      filter: drop-shadow(0 8px 12px rgba(0, 0, 0, 0.45));
+      opacity: 0.88;
     }
 
     .bin-wrapper.pos-2 {
-      transform: translateX(105px) translateZ(-40px) scale(0.82);
+      transform: translateX(95px) translateZ(-40px) scale(0.74);
       z-index: 10;
-      opacity: 0.9;
-      filter: drop-shadow(0 8px 12px rgba(0, 0, 0, 0.45));
+      opacity: 0.88;
     }
 
     .bin-3d {
-      width: 112px;
-      position: relative;
+      width: 92px;
       display: flex;
       flex-direction: column;
       align-items: center;
+      filter: drop-shadow(0 14px 18px rgba(0, 0, 0, 0.55));
     }
 
     .bin-lid {
-      width: 118px;
-      height: 20px;
-      border-radius: 10px 10px 3px 3px;
+      width: 98px;
+      height: 18px;
+      border-radius: 12px 12px 3px 3px;
       position: relative;
       z-index: 3;
-      box-shadow: inset 0 3px 5px rgba(255, 255, 255, 0.35), 0 4px 6px rgba(0, 0, 0, 0.4);
+      box-shadow: inset 0 3px 5px rgba(255, 255, 255, 0.4), 0 3px 5px rgba(0,0,0,0.4);
     }
-
     .bin-lid::before {
       content: "";
       position: absolute;
       top: -6px;
       left: 50%;
       transform: translateX(-50%);
-      width: 44px;
+      width: 38px;
       height: 6px;
       border-radius: 4px 4px 0 0;
       background: inherit;
-      filter: brightness(0.85);
+      filter: brightness(0.8);
     }
 
     .bin-rim {
-      width: 114px;
-      height: 8px;
-      border-radius: 2px;
+      width: 94px;
+      height: 7px;
+      border-radius: 3px;
       z-index: 2;
-      filter: brightness(0.78);
-      box-shadow: 0 3px 5px rgba(0,0,0,0.35);
+      filter: brightness(0.75);
     }
 
     .bin-body {
-      width: 102px;
-      height: 136px;
-      clip-path: polygon(0 0, 100% 0, 91% 100%, 9% 100%);
+      width: 84px;
+      height: 112px;
+      clip-path: polygon(0 0, 100% 0, 89% 100%, 11% 100%);
       position: relative;
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      padding: 8px 6px;
+      padding: 4px;
       text-align: center;
     }
 
@@ -437,200 +398,60 @@
       background: repeating-linear-gradient(
         90deg,
         transparent 0px,
-        transparent 22px,
-        rgba(0, 0, 0, 0.12) 24px,
-        rgba(255, 255, 255, 0.08) 26px
+        transparent 18px,
+        rgba(0, 0, 0, 0.15) 20px,
+        rgba(255, 255, 255, 0.08) 22px
       );
       pointer-events: none;
     }
 
-    .bin-wheels {
-      width: 92px;
-      display: flex;
-      justify-content: space-between;
-      margin-top: -6px;
-      z-index: 1;
-    }
+    .theme-black .bin-lid, .theme-black .bin-rim { background: linear-gradient(90deg, #1e293b, #64748b, #1e293b); }
+    .theme-black .bin-body { background: linear-gradient(90deg, #0f172a, #334155, #020617); color: #f8fafc; }
 
-    .wheel {
-      width: 18px;
-      height: 18px;
-      background: radial-gradient(circle at 35% 35%, #475569, #090d16);
-      border-radius: 50%;
-      border: 2px solid #1e293b;
-    }
+    .theme-blue .bin-lid, .theme-blue .bin-rim { background: linear-gradient(90deg, #1d4ed8, #93c5fd, #1e3a8a); }
+    .theme-blue .bin-body { background: linear-gradient(90deg, #1e40af, #60a5fa, #172554); color: #ffffff; }
 
-    .theme-black .bin-lid, .theme-black .bin-rim {
-      background: linear-gradient(90deg, #1e293b 0%, #475569 32%, #1e293b 70%, #090d16 100%);
-    }
-    .theme-black .bin-body {
-      background: linear-gradient(90deg, #111827 0%, #374151 30%, #1f2937 68%, #030712 100%);
-      color: #f8fafc;
-    }
+    .theme-yellow .bin-lid, .theme-yellow .bin-rim { background: linear-gradient(90deg, #ca8a04, #fef08a, #713f12); }
+    .theme-yellow .bin-body { background: linear-gradient(90deg, #a16207, #fde047, #451a03); color: #0f172a; }
 
-    .theme-blue .bin-lid, .theme-blue .bin-rim {
-      background: linear-gradient(90deg, #1d4ed8 0%, #60a5fa 32%, #2563eb 70%, #1e3a8a 100%);
-    }
-    .theme-blue .bin-body {
-      background: linear-gradient(90deg, #1e40af 0%, #3b82f6 30%, #2563eb 68%, #172554 100%);
-      color: #ffffff;
-    }
-
-    .theme-yellow .bin-lid, .theme-yellow .bin-rim {
-      background: linear-gradient(90deg, #ca8a04 0%, #fef08a 32%, #eab308 70%, #854d0e 100%);
-    }
-    .theme-yellow .bin-body {
-      background: linear-gradient(90deg, #a16207 0%, #facc15 30%, #eab308 68%, #713f12 100%);
-      color: #0f172a;
-    }
-
-    .bin-label-type {
-      font-size: 0.72rem;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin-bottom: 6px;
-      z-index: 2;
-      opacity: 0.92;
-    }
-
-    .bin-label-date {
-      background: rgba(0, 0, 0, 0.28);
-      padding: 5px 7px;
-      border-radius: 6px;
-      font-size: 0.85rem;
-      font-weight: 800;
-      line-height: 1.2;
-      z-index: 2;
-      width: 86%;
-    }
-
-    .theme-yellow .bin-label-date {
-      background: rgba(255, 255, 255, 0.55);
-      color: #0f172a;
-    }
-
-    .bin-label-days {
-      font-size: 0.7rem;
-      font-weight: 700;
-      margin-top: 6px;
-      z-index: 2;
-    }
-
-    .pos-0 .bin-label-date {
-      box-shadow: 0 0 0 1.5px rgba(255, 255, 255, 0.65);
-    }
+    .bin-label-type { font-size: 0.65rem; font-weight: 800; text-transform: uppercase; margin-bottom: 3px; z-index: 2; }
+    .bin-label-date { background: rgba(0,0,0,0.32); padding: 3px 6px; border-radius: 4px; font-size: 0.72rem; font-weight: 800; z-index: 2; }
+    .theme-yellow .bin-label-date { background: rgba(255,255,255,0.65); color: #0f172a; }
+    .bin-label-days { font-size: 0.62rem; font-weight: 700; margin-top: 3px; z-index: 2; }
 
     /* Mini-Kalender */
-    .mini-calendar {
-      flex: 1;
-      min-width: 260px;
-      background: rgba(15, 23, 42, 0.6);
-      border: 1px solid rgba(52, 211, 153, 0.2);
-      border-radius: 14px;
-      padding: 14px;
+    .mini-calendar-compact {
+      flex: 1.1;
+      background: rgba(15, 23, 42, 0.65);
+      border: 1px solid rgba(52, 211, 153, 0.22);
+      border-radius: 12px;
+      padding: 10px;
     }
 
-    .cal-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 10px;
-    }
+    .cal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+    .cal-month-title { font-size: 0.85rem; font-weight: 600; color: #e2e8f0; }
+    .cal-nav button { background: #1e293b; color: #fff; border: 1px solid rgba(255,255,255,0.12); border-radius: 4px; width: 22px; height: 22px; cursor: pointer; }
 
-    .cal-month-title {
-      font-size: 0.95rem;
-      font-weight: 600;
-      color: #e2e8f0;
-    }
-
-    .cal-nav button {
-      background: rgba(30, 41, 59, 0.9);
-      color: var(--text-main);
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      border-radius: 6px;
-      width: 28px;
-      height: 28px;
-      cursor: pointer;
-      font-weight: bold;
-    }
-
-    .cal-weekdays, .cal-days {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      text-align: center;
-      gap: 4px;
-    }
-
-    .cal-weekdays div {
-      font-size: 0.72rem;
-      color: var(--text-muted);
-      font-weight: 600;
-      padding-bottom: 4px;
-    }
-
-    .cal-day {
-      aspect-ratio: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.8rem;
-      border-radius: 8px;
-      background: rgba(30, 41, 59, 0.45);
-    }
-
-    .cal-day.empty { background: transparent; }
-
-    .cal-day.today {
-      border: 1.5px solid #34d399;
-      background: rgba(52, 211, 153, 0.15);
-      font-weight: 800;
-      color: #6ee7b7;
-    }
-
-    .dots-row {
-      display: flex;
-      gap: 2px;
-      margin-top: 2px;
-      height: 5px;
-    }
-
-    .dot {
-      width: 5px;
-      height: 5px;
-      border-radius: 50%;
-    }
-    .dot-black { background: #94a3b8; border: 1px solid #000; }
+    .cal-weekdays, .cal-days { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; gap: 2px; }
+    .cal-weekdays div { font-size: 0.65rem; color: var(--text-muted); font-weight: 600; }
+    .cal-day { aspect-ratio: 1.3; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 0.72rem; border-radius: 4px; background: rgba(30, 41, 59, 0.4); }
+    .cal-day.today { border: 1px solid #34d399; background: rgba(52, 211, 153, 0.15); color: #6ee7b7; font-weight: 800; }
+    .dots-row { display: flex; gap: 1px; height: 3px; margin-top: 1px; }
+    .dot { width: 3px; height: 3px; border-radius: 50%; }
+    .dot-black { background: #94a3b8; }
     .dot-blue { background: #3b82f6; }
     .dot-yellow { background: #facc15; }
-
-    .cal-legend {
-      display: flex;
-      justify-content: space-around;
-      margin-top: 10px;
-      padding-top: 8px;
-      border-top: 1px solid rgba(255, 255, 255, 0.08);
-      font-size: 0.72rem;
-      color: var(--text-muted);
-    }
-
-    .legend-item {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-    }
   </style>
 </head>
-<body>
+<body class="theme-night">
 
-  <div class="dashboard-grid">
+  <div class="dashboard-container">
 
     <!-- KACHEL 1: UHRZEIT & DATUM -->
     <div class="tile tile-clock">
       <div class="tile-header">
         <div class="tile-title">🕒 Uhrzeit & Datum</div>
-        <div class="badge-indigo" id="kw-badge">KW --</div>
+        <div class="badge badge-clock" id="kw-badge">KW --</div>
       </div>
       <div class="clock-box">
         <div class="big-time" id="big-time">--:--<span>:--</span></div>
@@ -639,52 +460,53 @@
       </div>
     </div>
 
-    <!-- KACHEL 2: WETTER & ZIELFISCH-EMPFEHLUNG -->
+    <!-- KACHEL 2: WETTER & ANGEL-KOMPASS -->
     <div class="tile tile-weather">
-      <!-- Animierter Wetter-Hintergrund -->
       <div class="weather-anim-layer" id="weather-anim-layer"></div>
 
       <div class="tile-header">
-        <div class="tile-title">🎣 Wetter & Zielfisch</div>
-        <div class="badge-sky">Oyten</div>
+        <div class="tile-title">🎣 Wetter & Angel-Kompass</div>
+        <div class="badge badge-weather">Oyten</div>
       </div>
 
-      <div class="weather-top">
+      <div class="weather-top-row">
         <div>
           <div class="temp-main" id="temp-val">-- °C</div>
-          <div class="weather-desc" id="weather-desc">Lade Wetterdaten...</div>
+          <div class="weather-desc" id="weather-desc">Lade Wetter...</div>
         </div>
-        <div class="weather-stats">
-          <div id="wind-val">Wind: -- km/h</div>
-          <div id="humidity-val">Feuchte: -- %</div>
-        </div>
-      </div>
-
-      <div class="pressure-card">
-        <div class="pressure-row">
-          <div class="pressure-val" id="pressure-val">---- hPa</div>
-          <div class="pressure-trend" id="pressure-trend">Trend: --</div>
+        <div style="text-align: right;">
+          <div id="pressure-val" style="font-size: 1rem; font-weight: 800;">---- hPa</div>
+          <div id="pressure-trend" style="font-size: 0.7rem; color: #38bdf8;">Trend: --</div>
         </div>
       </div>
 
-      <div class="target-fish-box" id="target-fish-box">
-        <div class="fish-header">Top-Zielfisch Empfehlung</div>
-        <div class="fish-title" id="fish-title">Analysiere Bedingungen...</div>
-        <div class="fish-reason" id="fish-reason">Ermittle optimalen Zielfisch (Zander, Hecht, Barsch, Forelle)...</div>
+      <div class="fishing-compass-grid">
+        <div class="compass-container">
+          <div class="compass-mark c-n">N<br><span style="font-size:0.5rem">Zander</span></div>
+          <div class="compass-mark c-e">O<br><span style="font-size:0.5rem">Hecht</span></div>
+          <div class="compass-mark c-s">S<br><span style="font-size:0.5rem">Barsch</span></div>
+          <div class="compass-mark c-w">W<br><span style="font-size:0.5rem">Forelle</span></div>
+          <div class="compass-needle" id="compass-needle" style="transform: rotate(0deg);"></div>
+          <div class="compass-pivot"></div>
+        </div>
+        <div class="compass-info">
+          <h4 id="compass-fish">Zielfisch: --</h4>
+          <p id="compass-reason">Analysiere Luftdruck und Tendenz für die Himmelsrichtung...</p>
+        </div>
       </div>
     </div>
 
-    <!-- KACHEL 3: ABFUHRTERMINE 2026 -->
-    <div class="tile tile-waste waste-tile-wide">
+    <!-- KACHEL 3: ABFUHRTERMINE & KALENDER -->
+    <div class="tile tile-waste">
       <div class="tile-header">
         <div class="tile-title">🗑️ Abfuhrtermine Oyten 2026</div>
-        <div class="badge-emerald" id="next-summary">Lädt...</div>
+        <div class="badge badge-waste" id="next-summary">Lädt...</div>
       </div>
 
-      <div class="waste-content">
-        <div class="bins-stage" id="bins-stage"></div>
+      <div class="waste-layout">
+        <div class="bins-stage-compact" id="bins-stage"></div>
 
-        <div class="mini-calendar">
+        <div class="mini-calendar-compact">
           <div class="cal-header">
             <span class="cal-month-title" id="cal-month-title">Monat 2026</span>
             <div class="cal-nav">
@@ -696,11 +518,6 @@
             <div>Mo</div><div>Di</div><div>Mi</div><div>Do</div><div>Fr</div><div>Sa</div><div>So</div>
           </div>
           <div class="cal-days" id="cal-days"></div>
-          <div class="cal-legend">
-            <div class="legend-item"><span class="dot dot-black"></span> Restmüll</div>
-            <div class="legend-item"><span class="dot dot-blue"></span> Papier</div>
-            <div class="legend-item"><span class="dot dot-yellow"></span> Gelber Sack</div>
-          </div>
         </div>
       </div>
     </div>
@@ -708,9 +525,45 @@
   </div>
 
   <script>
-    /* =========================================
-       1. UHRZEIT & DATUM
-       ========================================= */
+    /* Tageszeit & Animationen */
+    function applyTimeTheme() {
+      const hour = new Date().getHours();
+      const body = document.body;
+      body.className = "";
+      if (hour >= 6 && hour < 18) body.classList.add("theme-day");
+      else if (hour >= 18 && hour < 21) body.classList.add("theme-evening");
+      else body.classList.add("theme-night");
+
+      const layer = document.getElementById("weather-anim-layer");
+      layer.innerHTML = "";
+
+      if (hour < 6 || hour >= 21) {
+        for (let i = 0; i < 20; i++) {
+          const star = document.createElement("div");
+          star.className = "star";
+          star.style.width = `${1 + Math.random() * 2.5}px`;
+          star.style.height = star.style.width;
+          star.style.left = `${Math.random() * 100}%`;
+          star.style.top = `${Math.random() * 70}%`;
+          star.style.animationDuration = `${2 + Math.random() * 3}s`;
+          star.style.animationDelay = `${Math.random() * 3}s`;
+          layer.appendChild(star);
+        }
+      }
+
+      for (let i = 0; i < 2; i++) {
+        const cloud = document.createElement("div");
+        cloud.className = "drifting-cloud";
+        cloud.style.width = `${120 + i * 50}px`;
+        cloud.style.height = `${50 + i * 20}px`;
+        cloud.style.top = `${10 + i * 40}px`;
+        cloud.style.animationDuration = `${22 + i * 8}s`;
+        cloud.style.animationDelay = `${i * 5}s`;
+        layer.appendChild(cloud);
+      }
+    }
+
+    /* Uhrzeit & Datum */
     function getISOWeek(date) {
       const tmp = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
       const dayNum = tmp.getUTCDay() || 7;
@@ -721,211 +574,65 @@
 
     function updateClock() {
       const now = new Date();
-      const hh = String(now.getHours()).padStart(2, "0");
-      const mm = String(now.getMinutes()).padStart(2, "0");
-      const ss = String(now.getSeconds()).padStart(2, "0");
-
-      document.getElementById("big-time").innerHTML = `${hh}:${mm}<span>:${ss}</span>`;
+      document.getElementById("big-time").innerHTML = `${String(now.getHours()).padStart(2,"0")}:${String(now.getMinutes()).padStart(2,"0")}<span>:${String(now.getSeconds()).padStart(2,"0")}</span>`;
       document.getElementById("big-weekday").textContent = now.toLocaleDateString("de-DE", { weekday: "long" });
-      document.getElementById("big-date").textContent = now.toLocaleDateString("de-DE", {
-        day: "2-digit", month: "long", year: "numeric"
-      });
+      document.getElementById("big-date").textContent = now.toLocaleDateString("de-DE", { day: "2-digit", month: "long", year: "numeric" });
       document.getElementById("kw-badge").textContent = `KW ${getISOWeek(now)}`;
     }
 
-    /* =========================================
-       2. WETTER-ANIMATION & ZIELFISCH-LOGIK
-       ========================================= */
+    /* Wetter & Angel-Kompass Logik */
     function weatherCodeToText(code) {
-      const map = {
-        0: "Klarer Himmel", 1: "Überwiegend klar", 2: "Teilweise bewölkt", 3: "Bedeckt",
-        45: "Nebel", 48: "Raureifnebel",
-        51: "Leichter Nieselregen", 53: "Mäßiger Nieselregen", 55: "Dichter Nieselregen",
-        61: "Leichter Regen", 63: "Mäßiger Regen", 65: "Starker Regen",
-        71: "Leichter Schneefall", 73: "Mäßiger Schneefall", 75: "Starker Schneefall",
-        77: "Schneegriesel",
-        80: "Regenschauer", 81: "Mäßige Schauer", 82: "Starke Schauer",
-        85: "Schneeschauer", 86: "Starke Schneeschauer",
-        95: "Gewitter", 96: "Gewitter mit Hagel"
-      };
-      return map[code] || "Wechselhaft";
-    }
-
-    function renderWeatherAnimation(code) {
-      const layer = document.getElementById("weather-anim-layer");
-      layer.innerHTML = "";
-
-      // Schnee (71-77, 85-86)
-      if ((code >= 71 && code <= 77) || code === 85 || code === 86) {
-        for (let i = 0; i < 18; i++) {
-          const flake = document.createElement("div");
-          flake.className = "snow-flake";
-          const size = 3 + Math.random() * 4;
-          flake.style.width = `${size}px`;
-          flake.style.height = `${size}px`;
-          flake.style.left = `${Math.random() * 100}%`;
-          flake.style.animationDuration = `${4 + Math.random() * 4}s`;
-          flake.style.animationDelay = `${Math.random() * 4}s`;
-          layer.appendChild(flake);
-        }
-      }
-      // Regen / Niesel / Schauer / Gewitter (51-67, 80-82, 95-99)
-      else if ((code >= 51 && code <= 67) || (code >= 80 && code <= 82) || code >= 95) {
-        for (let i = 0; i < 22; i++) {
-          const drop = document.createElement("div");
-          drop.className = "rain-drop";
-          drop.style.left = `${Math.random() * 105}%`;
-          drop.style.animationDuration = `${0.9 + Math.random() * 0.7}s`;
-          drop.style.animationDelay = `${Math.random() * 1.5}s`;
-          layer.appendChild(drop);
-        }
-      }
-      // Sonnenschein / Klar (0, 1)
-      else if (code === 0 || code === 1) {
-        const sun = document.createElement("div");
-        sun.className = "sun-glow";
-        layer.appendChild(sun);
-      }
-      // Teilweise bewölkt (2): Dezente Sonne + ziehende Wolke
-      else if (code === 2) {
-        const sun = document.createElement("div");
-        sun.className = "sun-glow";
-        sun.style.opacity = "0.6";
-        layer.appendChild(sun);
-
-        for (let i = 0; i < 2; i++) {
-          const cloud = document.createElement("div");
-          cloud.className = "cloud-puff";
-          cloud.style.width = "140px";
-          cloud.style.height = "60px";
-          cloud.style.top = `${25 + i * 45}px`;
-          cloud.style.animationDuration = `${18 + i * 7}s`;
-          cloud.style.animationDelay = `${i * 5}s`;
-          layer.appendChild(cloud);
-        }
-      }
-      // Bedeckt / Nebel (3, 45, 48): Sanfte Wolkenschleier
-      else {
-        for (let i = 0; i < 3; i++) {
-          const cloud = document.createElement("div");
-          cloud.className = "cloud-puff";
-          cloud.style.width = "160px";
-          cloud.style.height = "70px";
-          cloud.style.top = `${15 + i * 50}px`;
-          cloud.style.animationDuration = `${20 + i * 6}s`;
-          cloud.style.animationDelay = `${i * 4}s`;
-          layer.appendChild(cloud);
-        }
-      }
+      const map = { 0: "Klarer Himmel", 1: "Überwiegend klar", 2: "Teilweise bewölkt", 3: "Bedeckt", 45: "Nebel", 51: "Leichter Niesel", 61: "Leichter Regen", 71: "Schneefall", 80: "Regenschauer", 95: "Gewitter" };
+      return map[code] || "Wetter";
     }
 
     async function loadWeather() {
-      const url = "https://api.open-meteo.com/v1/forecast?latitude=53.058&longitude=9.015&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m,pressure_msl&hourly=pressure_msl&past_hours=6&forecast_hours=2&timezone=Europe%2FBerlin";
-
       try {
-        const res = await fetch(url);
+        const res = await fetch("https://api.open-meteo.com/v1/forecast?latitude=53.058&longitude=9.015&current=temperature_2m,relative_humidity_2m,weather_code,pressure_msl&hourly=pressure_msl&past_hours=6&forecast_hours=2&timezone=Europe%2FBerlin");
         const data = await res.json();
         const cur = data.current;
 
-        const temp = Math.round(cur.temperature_2m * 10) / 10;
-        const pressure = Math.round(cur.pressure_msl * 10) / 10;
-        const wind = Math.round(cur.wind_speed_10m);
-        const humidity = cur.relative_humidity_2m;
-
-        document.getElementById("temp-val").textContent = `${temp.toFixed(1)} °C`;
+        document.getElementById("temp-val").textContent = `${Math.round(cur.temperature_2m)} °C`;
         document.getElementById("weather-desc").textContent = weatherCodeToText(cur.weather_code);
-        document.getElementById("wind-val").textContent = `Wind: ${wind} km/h`;
-        document.getElementById("humidity-val").textContent = `Feuchte: ${humidity} %`;
-        document.getElementById("pressure-val").textContent = `${pressure.toFixed(1)} hPa`;
+        document.getElementById("pressure-val").textContent = `${cur.pressure_msl.toFixed(1)} hPa`;
+        applyTimeTheme();
 
-        // Passende Wetter-Animation starten
-        renderWeatherAnimation(cur.weather_code);
+        const p3h = data.hourly.pressure_msl[Math.max(0, data.hourly.pressure_msl.length - 3)] || cur.pressure_msl;
+        const diff = Math.round((cur.pressure_msl - p3h) * 10) / 10;
+        document.getElementById("pressure-trend").textContent = `Trend: ${diff >= 0 ? "+" : ""}${diff} hPa/3h`;
 
-        // 3-Stunden-Trend berechnen
-        const hourlyTimes = data.hourly.time;
-        const hourlyPressures = data.hourly.pressure_msl;
-        const currentHourPrefix = cur.time.slice(0, 13);
-        let idx = hourlyTimes.findIndex(t => t.startsWith(currentHourPrefix));
-        if (idx === -1) idx = hourlyPressures.length - 2;
+        const needle = document.getElementById("compass-needle");
+        const fishHead = document.getElementById("compass-fish");
+        const fishReason = document.getElementById("compass-reason");
 
-        const p3hAgo = hourlyPressures[Math.max(0, idx - 3)];
-        const diff3h = Math.round((pressure - p3hAgo) * 10) / 10;
-
-        let trendLabel = "";
-        if (diff3h <= -2.5) trendLabel = `↘ Schnell fallend (${diff3h} hPa)`;
-        else if (diff3h < -0.5) trendLabel = `↘ Leicht fallend (${diff3h} hPa)`;
-        else if (diff3h > 2.5) trendLabel = `↗ Schnell steigend (+${diff3h} hPa)`;
-        else if (diff3h > 0.5) trendLabel = `↗ Leicht steigend (+${diff3h} hPa)`;
-        else trendLabel = `→ Stabil (${diff3h >= 0 ? "+" : ""}${diff3h} hPa)`;
-
-        document.getElementById("pressure-trend").textContent = trendLabel;
-
-        // Zielfisch-Auswertung (Zander, Hecht, Barsch, Forelle)
-        const fishTitle = document.getElementById("fish-title");
-        const fishReason = document.getElementById("fish-reason");
-
-        if (diff3h <= -2.0) {
-          fishTitle.textContent = "🎯 Top-Zielfisch: ZANDER & HECHT";
-          fishReason.textContent = `Der Luftdruck fällt spürbar (${diff3h} hPa). Raubfische verspüren durch den Druckabfall Fressdruck – ideal für Zander und Hecht vor dem Umschwung.`;
-        } else if (pressure >= 1018 && Math.abs(diff3h) <= 1.0) {
-          fishTitle.textContent = "🎯 Top-Zielfisch: FORELLE & BARSCH";
-          fishReason.textContent = `Stabiler Hochdruck (${pressure} hPa). Klare, konstante Bedingungen – perfekt für Forellen im Fließwasser und aktive Barschschwärme.`;
-        } else if (pressure >= 1008 && pressure < 1018 && diff3h >= -0.8 && diff3h <= 0.8) {
-          fishTitle.textContent = "🎯 Top-Zielfisch: HECHT & BARSCH";
-          fishReason.textContent = `Ausgeglichener Normaldruck (${pressure} hPa) mit konstanter Tendenz. Hervorragende, verlässliche Allrounder-Bedingungen.`;
-        } else if (pressure < 1005) {
-          fishTitle.textContent = "🎯 Top-Zielfisch: ZANDER (Grundnah)";
-          fishReason.textContent = `Tiefdrucklage (${pressure} hPa). Die Fische stehen träger. Langsame Köderführung am Grund bringt jetzt den Zander.`;
+        // Himmelsrichtungen: Norden=Zander (0°), Osten=Hecht (90°), Süden=Barsch (180°), Westen=Forelle (270°)
+        if (diff <= -2.0) {
+          needle.style.transform = "rotate(0deg)"; // Norden
+          fishHead.textContent = "Norden (N): ZANDER";
+          fishReason.textContent = `Starker Druckabfall (${diff} hPa). Zander und Raubfische verspüren massiven Fressdruck!`;
+        } else if (cur.pressure_msl >= 1018) {
+          needle.style.transform = "rotate(270deg)"; // Westen
+          fishHead.textContent = "Westen (W): FORELLE";
+          fishReason.textContent = `Stabiles Hoch (${cur.pressure_msl} hPa). Perfekt für Forellen im klaren Fließwasser.`;
+        } else if (cur.pressure_msl >= 1008 && cur.pressure_msl < 1018 && Math.abs(diff) <= 0.8) {
+          needle.style.transform = "rotate(90deg)"; // Osten
+          fishHead.textContent = "Osten (O): HECHT";
+          fishReason.textContent = `Konstanter Normaldruck. Ideale Allrounder-Bedingungen für den Hecht.`;
         } else {
-          fishTitle.textContent = "🎯 Top-Zielfisch: BARSCH";
-          fishReason.textContent = `Gemischte Trendphase. Barsche zeigen sich oft unbeeindruckter von leichten Luftdruckschwankungen und sind gut zu fangen.`;
+          needle.style.transform = "rotate(180deg)"; // Süden
+          fishHead.textContent = "Süden (S): BARSCH";
+          fishReason.textContent = `Gemischte Trendphase. Barsche zeigen sich aktiv und beiißfreudig.`;
         }
-
       } catch (e) {
-        document.getElementById("weather-desc").textContent = "Wetterdaten nicht erreichbar";
-        document.getElementById("fish-title").textContent = "Keine Daten";
-        document.getElementById("fish-reason").textContent = "API-Abruf fehlgeschlagen.";
+        document.getElementById("weather-desc").textContent = "Wetter offline";
       }
     }
 
-    /* =========================================
-       3. MÜLLPLAN & 3D TONNEN (OYTEN 2026)
-       ========================================= */
+    /* Müllplan & Tonnen */
     const schedule2026 = {
-      black: [
-        "2026-01-02", "2026-01-15", "2026-01-29",
-        "2026-02-12", "2026-02-26",
-        "2026-03-12", "2026-03-26",
-        "2026-04-10", "2026-04-23",
-        "2026-05-07", "2026-05-21",
-        "2026-06-04", "2026-06-18",
-        "2026-07-02", "2026-07-16", "2026-07-30",
-        "2026-08-13", "2026-08-27",
-        "2026-09-10", "2026-09-24",
-        "2026-10-08", "2026-10-22",
-        "2026-11-05", "2026-11-19",
-        "2026-12-03", "2026-12-17", "2026-12-31"
-      ],
-      blue: [
-        "2026-01-28", "2026-02-25", "2026-03-25",
-        "2026-04-22", "2026-05-20", "2026-06-17",
-        "2026-07-15", "2026-08-12", "2026-09-09",
-        "2026-10-07", "2026-11-04", "2026-12-02", "2026-12-30"
-      ],
-      yellow: [
-        "2026-01-02", "2026-01-15", "2026-01-29",
-        "2026-02-12", "2026-02-26",
-        "2026-03-12", "2026-03-26",
-        "2026-04-10", "2026-04-23",
-        "2026-05-07", "2026-05-21",
-        "2026-06-04", "2026-06-18",
-        "2026-07-02", "2026-07-16", "2026-07-30",
-        "2026-08-13", "2026-08-27",
-        "2026-09-10", "2026-09-24",
-        "2026-10-08", "2026-10-22",
-        "2026-11-05", "2026-11-19",
-        "2026-12-03", "2026-12-17", "2026-12-31"
-      ]
+      black: ["2026-01-02", "2026-01-15", "2026-01-29", "2026-02-12", "2026-02-26", "2026-03-12", "2026-03-26", "2026-04-10", "2026-04-23", "2026-05-07", "2026-05-21", "2026-06-04", "2026-06-18", "2026-07-02", "2026-07-16", "2026-07-30", "2026-08-13", "2026-08-27", "2026-09-10", "2026-09-24", "2026-10-08", "2026-10-22", "2026-11-05", "2026-11-19", "2026-12-03", "2026-12-17", "2026-12-31"],
+      blue: ["2026-01-28", "2026-02-25", "2026-03-25", "2026-04-22", "2026-05-20", "2026-06-17", "2026-07-15", "2026-08-12", "2026-09-09", "2026-10-07", "2026-11-04", "2026-12-02", "2026-12-30"],
+      yellow: ["2026-01-02", "2026-01-15", "2026-01-29", "2026-02-12", "2026-02-26", "2026-03-12", "2026-03-26", "2026-04-10", "2026-04-23", "2026-05-07", "2026-05-21", "2026-06-04", "2026-06-18", "2026-07-02", "2026-07-16", "2026-07-30", "2026-08-13", "2026-08-27", "2026-09-10", "2026-09-24", "2026-10-08", "2026-10-22", "2026-11-05", "2026-11-19", "2026-12-03", "2026-12-17", "2026-12-31"]
     };
 
     const binMeta = [
@@ -935,58 +642,27 @@
     ];
 
     const weekdaysShort = ["So", "Mo", "Di", "Mi", "Do", "Fr", "Sa"];
-    const monthNames = [
-      "Januar", "Februar", "März", "April", "Mai", "Juni",
-      "Juli", "August", "September", "Oktober", "November", "Dezember"
-    ];
+    const monthNames = ["Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"];
 
     function getTodayMidnight() {
       const now = new Date();
       return new Date(now.getFullYear(), now.getMonth(), now.getDate());
     }
 
-    function parseLocalDate(str) {
-      const [y, m, d] = str.split("-").map(Number);
-      return new Date(y, m - 1, d);
-    }
-
-    function formatDateDE(dateObj) {
-      const wd = weekdaysShort[dateObj.getDay()];
-      const dd = String(dateObj.getDate()).padStart(2, "0");
-      const mm = String(dateObj.getMonth() + 1).padStart(2, "0");
-      return `${wd}, ${dd}.${mm}.`;
-    }
-
-    function getDaysDiffText(diffDays) {
-      if (diffDays === 0) return "Heute!";
-      if (diffDays === 1) return "Morgen";
-      return `in ${diffDays} Tagen`;
-    }
-
     function renderBins() {
       const today = getTodayMidnight();
-
       const enriched = binMeta.map((bin, priorityIndex) => {
-        const dates = schedule2026[bin.id].map(parseLocalDate);
+        const dates = schedule2026[bin.id].map(d => new Date(d));
         const nextDate = dates.find(d => d >= today) || dates[dates.length - 1];
         const diffDays = Math.round((nextDate - today) / (1000 * 60 * 60 * 24));
         return { ...bin, nextDate, diffDays, priorityIndex };
       });
 
-      enriched.sort((a, b) => {
-        if (a.nextDate.getTime() !== b.nextDate.getTime()) {
-          return a.nextDate - b.nextDate;
-        }
-        return a.priorityIndex - b.priorityIndex;
-      });
-
-      const frontBin = enriched[0];
-      document.getElementById("next-summary").textContent =
-        `Nächste: ${frontBin.name} (${formatDateDE(frontBin.nextDate)})`;
+      enriched.sort((a, b) => a.nextDate - b.nextDate || a.priorityIndex - b.priorityIndex);
+      document.getElementById("next-summary").textContent = `Nächste: ${enriched[0].name} (${weekdaysShort[enriched[0].nextDate.getDay()]}, ${String(enriched[0].nextDate.getDate()).padStart(2,"0")}.${String(enriched[0].nextDate.getMonth()+1).padStart(2,"0")}.)`;
 
       const stage = document.getElementById("bins-stage");
       stage.innerHTML = "";
-
       enriched.forEach((bin, posIdx) => {
         const wrapper = document.createElement("div");
         wrapper.className = `bin-wrapper ${bin.theme} pos-${posIdx}`;
@@ -996,12 +672,8 @@
             <div class="bin-rim"></div>
             <div class="bin-body">
               <div class="bin-label-type">${bin.name}</div>
-              <div class="bin-label-date">${formatDateDE(bin.nextDate)}</div>
-              <div class="bin-label-days">${getDaysDiffText(bin.diffDays)}</div>
-            </div>
-            <div class="bin-wheels">
-              <div class="wheel"></div>
-              <div class="wheel"></div>
+              <div class="bin-label-date">${weekdaysShort[bin.nextDate.getDay()]}, ${String(bin.nextDate.getDate()).padStart(2,"0")}.${String(bin.nextDate.getMonth()+1).padStart(2,"0")}.</div>
+              <div class="bin-label-days">${bin.diffDays === 0 ? "Heute!" : bin.diffDays === 1 ? "Morgen" : `in ${bin.diffDays} T.`}</div>
             </div>
           </div>
         `;
@@ -1009,65 +681,41 @@
       });
     }
 
-    let currentCalYear = new Date().getFullYear();
-    let currentCalMonth = new Date().getMonth();
-
-    function changeMonth(delta) {
-      currentCalMonth += delta;
-      if (currentCalMonth > 11) {
-        currentCalMonth = 0;
-        currentCalYear++;
-      } else if (currentCalMonth < 0) {
-        currentCalMonth = 11;
-        currentCalYear--;
-      }
+    let calY = new Date().getFullYear(), calM = new Date().getMonth();
+    function changeMonth(d) {
+      calM += d;
+      if (calM > 11) { calM = 0; calY++; } else if (calM < 0) { calM = 11; calY--; }
       renderCalendar();
     }
 
     function renderCalendar() {
-      const titleEl = document.getElementById("cal-month-title");
+      document.getElementById("cal-month-title").textContent = `${monthNames[calM]} ${calY}`;
       const daysEl = document.getElementById("cal-days");
-      titleEl.textContent = `${monthNames[currentCalMonth]} ${currentCalYear}`;
       daysEl.innerHTML = "";
-
-      const firstDay = new Date(currentCalYear, currentCalMonth, 1);
-      let startOffset = (firstDay.getDay() + 6) % 7;
-      const daysInMonth = new Date(currentCalYear, currentCalMonth + 1, 0).getDate();
+      const startOffset = (new Date(calY, calM, 1).getDay() + 6) % 7;
+      const daysInMonth = new Date(calY, calM + 1, 0).getDate();
       const today = getTodayMidnight();
 
-      for (let i = 0; i < startOffset; i++) {
-        const empty = document.createElement("div");
-        empty.className = "cal-day empty";
-        daysEl.appendChild(empty);
-      }
+      for (let i = 0; i < startOffset; i++) daysEl.appendChild(document.createElement("div"));
 
       for (let day = 1; day <= daysInMonth; day++) {
         const cell = document.createElement("div");
         cell.className = "cal-day";
+        const dateStr = `${calY}-${String(calM + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+        const cellDate = new Date(calY, calM, day);
+        if (cellDate.getTime() === today.getTime()) cell.classList.add("today");
 
-        const dateStr = `${currentCalYear}-${String(currentCalMonth + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
-        const cellDate = new Date(currentCalYear, currentCalMonth, day);
+        let dots = '<div class="dots-row">';
+        if (schedule2026.black.includes(dateStr)) dots += '<span class="dot dot-black"></span>';
+        if (schedule2026.blue.includes(dateStr)) dots += '<span class="dot dot-blue"></span>';
+        if (schedule2026.yellow.includes(dateStr)) dots += '<span class="dot dot-yellow"></span>';
+        dots += '</div>';
 
-        if (cellDate.getTime() === today.getTime()) {
-          cell.classList.add("today");
-        }
-
-        const hasBlack = schedule2026.black.includes(dateStr);
-        const hasBlue = schedule2026.blue.includes(dateStr);
-        const hasYellow = schedule2026.yellow.includes(dateStr);
-
-        let dotsHtml = '<div class="dots-row">';
-        if (hasBlack) dotsHtml += '<span class="dot dot-black"></span>';
-        if (hasBlue) dotsHtml += '<span class="dot dot-blue"></span>';
-        if (hasYellow) dotsHtml += '<span class="dot dot-yellow"></span>';
-        dotsHtml += '</div>';
-
-        cell.innerHTML = `<span>${day}</span>${dotsHtml}`;
+        cell.innerHTML = `<span>${day}</span>${dots}`;
         daysEl.appendChild(cell);
       }
     }
 
-    // Start
     updateClock();
     setInterval(updateClock, 1000);
     loadWeather();
